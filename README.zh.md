@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-一个独立的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 插件：为**不支持视觉输入**的模型（如 DeepSeek 对话模型）提供本地图片文字识别，基于独立的 [newbee-ocr](https://github.com/zibo-chen/rust-paddle-ocr)（`nbocr`）引擎，运行 PP-OCRv6 模型。
+一个独立的 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 插件：为**不支持视觉输入**的模型（如 DeepSeek 对话模型）提供本地图片文字识别，基于独立的 [newbee-ocr](https://github.com/zibo-chen/newbee-ocr-cli)（`nbocr`）引擎，运行 PP-OCRv6 模型。
 
 完全独立于仓库（out-of-tree）：只依赖已发布的 dsh 基础包（`@deepseek-ai/cordis`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-subprocess` 等），与 deepseek-harness 仓库零耦合。
 
@@ -17,12 +17,25 @@
 
 ## 安装
 
-### 1. 构建 OCR 引擎
+### 1. 安装 OCR 引擎
 
-前置条件：已构建的 `nbocr` 二进制（来自 [newbee-ocr-cli](https://github.com/zibo-chen/rust-paddle-ocr) 仓库）：
+从 [newbee-ocr-cli](https://github.com/zibo-chen/newbee-ocr-cli) 的 Releases 获取 `nbocr` 二进制（提供 Windows / macOS / Linux 预构建版本）：
 
 ```bash
-cargo build --release        # -> target/release/nbocr[.exe]
+# 一键安装脚本（自动检测平台，安装到 ~/.cargo/bin 并加入 PATH）
+curl -LsSf https://github.com/zibo-chen/newbee-ocr-cli/releases/latest/download/newbee_ocr_cli-installer.sh | sh
+# 或在 Windows PowerShell 中：
+#   irm https://github.com/zibo-chen/newbee-ocr-cli/releases/latest/download/newbee_ocr_cli-installer.ps1 | iex
+
+# 备选：从 Release 页面下载对应平台的压缩包，解压出 nbocr[.exe] 放到任意目录，
+# 然后在配置里用 `command` 指向它
+```
+
+或从源码构建：
+
+```bash
+git clone https://github.com/zibo-chen/newbee-ocr-cli
+cd newbee-ocr-cli && cargo build --release   # -> target/release/nbocr[.exe]
 ```
 
 ### 2. 将插件安装到你的 dsh profile

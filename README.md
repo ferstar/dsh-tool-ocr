@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-A standalone [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) plugin: local image text recognition for models **without vision input** (e.g. DeepSeek chat models), backed by the standalone [newbee-ocr](https://github.com/zibo-chen/rust-paddle-ocr) (`nbocr`) engine over PP-OCRv6 models.
+A standalone [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) plugin: local image text recognition for models **without vision input** (e.g. DeepSeek chat models), backed by the standalone [newbee-ocr](https://github.com/zibo-chen/newbee-ocr-cli) (`nbocr`) engine over PP-OCRv6 models.
 
 Fully out-of-tree: depends only on published dsh base packages (`@deepseek-ai/cordis`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-subprocess`, …). No coupling to the deepseek-harness repository.
 
@@ -17,12 +17,25 @@ Fully out-of-tree: depends only on published dsh base packages (`@deepseek-ai/co
 
 ## Install
 
-### 1. Build the OCR engine
+### 1. Install the OCR engine
 
-Prerequisite: a built `nbocr` binary (from the [newbee-ocr-cli](https://github.com/zibo-chen/rust-paddle-ocr) repo):
+Get the `nbocr` binary from the [newbee-ocr-cli](https://github.com/zibo-chen/newbee-ocr-cli) releases (prebuilt binaries for Windows / macOS / Linux):
 
 ```bash
-cargo build --release        # -> target/release/nbocr[.exe]
+# one-line installer (detects platform, installs to ~/.cargo/bin, adds to PATH)
+curl -LsSf https://github.com/zibo-chen/newbee-ocr-cli/releases/latest/download/newbee_ocr_cli-installer.sh | sh
+# or on Windows PowerShell:
+#   irm https://github.com/zibo-chen/newbee-ocr-cli/releases/latest/download/newbee_ocr_cli-installer.ps1 | iex
+
+# alternative: download the archive for your platform from the release page
+#   and unpack nbocr[.exe] to any directory, then point `command` at it
+```
+
+Or build from source:
+
+```bash
+git clone https://github.com/zibo-chen/newbee-ocr-cli
+cd newbee-ocr-cli && cargo build --release   # -> target/release/nbocr[.exe]
 ```
 
 ### 2. Install the plugin into your dsh profile
