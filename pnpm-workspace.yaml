@@ -1,0 +1,4 @@
+allowBuilds:
+  '@deepseek-ai/dsh-subprocess-local': true
+  esbuild: false
+  node-pty: false
