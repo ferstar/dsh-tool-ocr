@@ -1,6 +1,6 @@
 {
   "name": "dsh-tool-ocr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Standalone ocr tool plugin for DeepSeek Harness (dsh) — local image text recognition via the newbee-ocr (nbocr) engine, for models without vision input",
   "type": "module",
   "main": "lib/index.js",
