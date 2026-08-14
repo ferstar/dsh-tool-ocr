@@ -1,5 +1,7 @@
 # dsh-tool-ocr
 
+English | [中文](README.zh.md)
+
 A standalone [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) plugin: local image text recognition for models **without vision input** (e.g. DeepSeek chat models), backed by the standalone [newbee-ocr](https://github.com/zibo-chen/rust-paddle-ocr) (`nbocr`) engine over PP-OCRv6 models.
 
 Fully out-of-tree: depends only on published dsh base packages (`@deepseek-ai/cordis`, `@deepseek-ai/dsh-tools`, `@deepseek-ai/dsh-subprocess`, …). No coupling to the deepseek-harness repository.

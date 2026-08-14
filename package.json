@@ -4,17 +4,20 @@
   "description": "Standalone ocr tool plugin for DeepSeek Harness (dsh) — local image text recognition via the newbee-ocr (nbocr) engine, for models without vision input",
   "type": "module",
   "main": "lib/index.js",
-  "types": "lib/types/index.d.ts",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
-      "types": "./lib/types/index.d.ts",
+      "types": "./lib/index.d.ts",
       "default": "./lib/index.js"
     },
     "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
   "files": [
-    "lib"
+    "lib",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
   ],
   "license": "MIT",
   "repository": {
