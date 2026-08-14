@@ -17,19 +17,34 @@ Fully out-of-tree: depends only on published dsh base packages (`@deepseek-ai/co
 
 ## Install
 
-Prerequisites: a built `nbocr` binary.
+### 1. Build the OCR engine
+
+Prerequisite: a built `nbocr` binary (from the [newbee-ocr-cli](https://github.com/zibo-chen/rust-paddle-ocr) repo):
 
 ```bash
-# build the engine (from the newbee-ocr-cli repo)
 cargo build --release        # -> target/release/nbocr[.exe]
+```
 
-# this plugin: install deps and build
-pnpm install && pnpm build
+### 2. Install the plugin into your dsh profile
+
+From npm (published as `dsh-tool-ocr`):
+
+```bash
+dsh plugin --profile web add dsh-tool-ocr
+# or, inside the profile directory:
+cd ~/.dsh/profiles/web && pnpm add dsh-tool-ocr
+```
+
+Or from source:
+
+```bash
+git clone https://github.com/ferstar/dsh-tool-ocr
+cd dsh-tool-ocr && pnpm install && pnpm build
 ```
 
 ## Mount into dsh
 
-Add the plugin row to your profile's `cordis.patch.yml` (or use `dsh plugin --profile <name> add` with a published package):
+Add the plugin row to your profile's `cordis.patch.yml`:
 
 ```yaml
 - insert:
@@ -44,6 +59,9 @@ Add the plugin row to your profile's `cordis.patch.yml` (or use `dsh plugin --pr
         # detection model tier: v6-tiny (embedded default), v6-small, v6-medium
         detModel: 'v6-tiny'
 ```
+
+> Note: `dsh-tool-ocr` is a plain plugin, not a bundle — `dsh plugin add` installs it as a
+> dependency but does not auto-mount it. The patch row above is what activates it.
 
 ## Configuration
 

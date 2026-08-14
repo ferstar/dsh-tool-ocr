@@ -17,19 +17,34 @@
 
 ## 安装
 
-前置条件：已构建的 `nbocr` 二进制。
+### 1. 构建 OCR 引擎
+
+前置条件：已构建的 `nbocr` 二进制（来自 [newbee-ocr-cli](https://github.com/zibo-chen/rust-paddle-ocr) 仓库）：
 
 ```bash
-# 构建引擎（在 newbee-ocr-cli 仓库中）
 cargo build --release        # -> target/release/nbocr[.exe]
+```
 
-# 本插件：安装依赖并构建
-pnpm install && pnpm build
+### 2. 将插件安装到你的 dsh profile
+
+从 npm 安装（已发布为 `dsh-tool-ocr`）：
+
+```bash
+dsh plugin --profile web add dsh-tool-ocr
+# 或在 profile 目录内：
+cd ~/.dsh/profiles/web && pnpm add dsh-tool-ocr
+```
+
+或从源码安装：
+
+```bash
+git clone https://github.com/ferstar/dsh-tool-ocr
+cd dsh-tool-ocr && pnpm install && pnpm build
 ```
 
 ## 挂载到 dsh
 
-在 profile 的 `cordis.patch.yml` 中添加插件行（或使用 `dsh plugin --profile <name> add` 安装已发布的包）：
+在 profile 的 `cordis.patch.yml` 中添加插件行：
 
 ```yaml
 - insert:
@@ -44,6 +59,8 @@ pnpm install && pnpm build
         # 检测模型档位：v6-tiny（内嵌默认）、v6-small、v6-medium
         detModel: 'v6-tiny'
 ```
+
+> 注意：`dsh-tool-ocr` 是普通插件而非 bundle —— `dsh plugin add` 会将其安装为依赖，但不会自动挂载。上面的 patch 行才是激活它的方式。
 
 ## 配置
 
