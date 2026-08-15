@@ -15,6 +15,46 @@
 | 输出 | 阅读顺序 `<text>`、引擎事实、分块包围盒（`include_boxes`）、复核标记（低置信度/金额/数字/日期/数量，`needsReview`）、启发式 Markdown 表格（`table`） |
 | 健壮性 | 能容忍 MNN 诊断信息污染引擎 stdout；遵循调用方取消和超时 |
 
+## 两种使用方式
+
+取决于你运行的是哪个 dsh 构建，图片输入的工作方式不同：
+
+### 方式 A —— 官方 dsh：传图片路径（`ocr { path }`）
+
+官方 [deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) 会拒绝未声明图片输入能力的模型（如 DeepSeek 对话模型）上传图片 —— `session.prompt` 返回 `MODEL_DOES_NOT_SUPPORT_IMAGES`。这是产品决策而非缺陷，本插件无法绕过。因此在官方 dsh 上，通过路径使用工具：
+
+```
+ocr { path: "C:/Users/me/Desktop/screenshot.png" }
+```
+
+模型通过 OCR 引擎从磁盘读取文件。图片从不进入会话，因此无需改动 dsh 核心。
+
+### 方式 B —— [dsh fork](https://github.com/ferstar/deepseek-harness)：拖拽图片（`ocr { attachment_id }`）
+
+[ferstar/deepseek-harness](https://github.com/ferstar/deepseek-harness)（默认分支 `feat/image-placeholder-for-text-only-adapters`）增加了一条可选的图片占位管线：
+
+- `api-gateway` 新增 `allowImagePlaceholder`（默认 `false`）。开启后，即使纯文本模型也允许图片进入会话。
+- 请求到达 LLM 之前，每个 image block 都会被替换为 `[image attachment <id>]` 文本。模型知道图片存在，调用 `ocr { attachment_id }`，插件把附件物化为临时文件交给引擎。
+
+体验与多模态模型一致：把图片拖进对话，模型就能读出其中的文字 —— 区别只是图片在发给 LLM 之前先交给了 OCR，而不是作为像素发送。
+
+在 profile 的 `cordis.patch.yml` 中开启：
+
+```yaml
+- id: api-gateway
+  config:
+    allowImagePlaceholder: true
+
+- insert:
+    - id: ocr
+      name: 'dsh-tool-ocr'
+      inject: [tools, subprocess, systemPrompt]
+      config:
+        command: 'C:/path/to/nbocr.exe'
+        detModel: 'v6-tiny'
+        language: 'chinese'
+```
+
 ## 安装
 
 ### 1. 安装 OCR 引擎

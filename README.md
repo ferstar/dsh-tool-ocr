@@ -15,6 +15,46 @@ Fully out-of-tree: depends only on published dsh base packages (`@deepseek-ai/co
 | Output | Reading-ordered `<text>`, engine facts, per-block bounding boxes (`include_boxes`), review flags (low-confidence / amount / numeric / date / quantity, `needsReview`), heuristic Markdown table (`table`) |
 | Robustness | Survives MNN diagnostics polluting engine stdout; honors caller cancellation and timeout |
 
+## Two ways to use it
+
+Depending on which dsh build you run, image input works differently:
+
+### Option A — official dsh: pass image paths (`ocr { path }`)
+
+The official [deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) rejects image uploads for models that do not declare image input (e.g. DeepSeek chat models) — `session.prompt` answers `MODEL_DOES_NOT_SUPPORT_IMAGES`. That is a product decision, not a bug, and this plugin cannot override it. So on an official dsh install you use the tool by path:
+
+```
+ocr { path: "C:/Users/me/Desktop/screenshot.png" }
+```
+
+The model reads the file from disk through the OCR engine. No image ever enters the session, so no dsh core change is needed.
+
+### Option B — the [dsh fork](https://github.com/ferstar/deepseek-harness): drag-and-drop images (`ocr { attachment_id }`)
+
+The fork at [ferstar/deepseek-harness](https://github.com/ferstar/deepseek-harness) (default branch `feat/image-placeholder-for-text-only-adapters`) adds an opt-in image-placeholder pipeline:
+
+- `api-gateway` gains `allowImagePlaceholder` (default `false`). With it on, images are admitted into the session even for text-only models.
+- Before the request reaches the LLM, every image block is substituted with `[image attachment <id>]` text. The model sees that an image exists, calls `ocr { attachment_id }`, and the plugin materializes the attachment to a temp file for the engine.
+
+The experience is like a multimodal model: drag the image into the chat, and the model reads its text — the image is simply handed to OCR before the LLM instead of being sent as pixels.
+
+Enable it in your profile's `cordis.patch.yml`:
+
+```yaml
+- id: api-gateway
+  config:
+    allowImagePlaceholder: true
+
+- insert:
+    - id: ocr
+      name: 'dsh-tool-ocr'
+      inject: [tools, subprocess, systemPrompt]
+      config:
+        command: 'C:/path/to/nbocr.exe'
+        detModel: 'v6-tiny'
+        language: 'chinese'
+```
+
 ## Install
 
 ### 1. Install the OCR engine
