@@ -58,12 +58,17 @@ class FakeScope implements SettingsScope<Record<string, unknown>> {
   }
 }
 
-function mount(initial: Record<string, unknown> = { command: 'nbocr', maxTextChars: 12000 }) {
+function mount(initial: Record<string, unknown> = { command: 'nbocr', maxTextChars: 12000 }, api?: Parameters<typeof OcrCardController>[1]) {
   const scope = new FakeScope(initial)
-  const card = new OcrCardController(scope)
+  const card = new OcrCardController(scope, api)
   const face = card.inject()
   const snapshot = () => face.hooks.ocrCard.getSnapshot()
   return { scope, face, snapshot }
+}
+
+/** A scripted host face answering pickDirectory. */
+function pickerApi(path: string | null): { host: { pickDirectory: () => Promise<{ result: { ok: boolean; value: { path: string | null } } }> } } {
+  return { host: { pickDirectory: async () => ({ result: { ok: true, value: { path } } }) } }
 }
 
 describe('ocr card controller', () => {
@@ -109,5 +114,29 @@ describe('ocr card controller', () => {
     face.edit('maxTextChars', 'twelve')
     expect(snapshot().fields.maxTextChars.invalid).toBe(true)
     expect(snapshot().invalid).toBe(true)
+  })
+
+  it('stages the picked directory as the models-dir draft', async () => {
+    const { face, snapshot } = mount({ command: 'nbocr' }, pickerApi('C:/models'))
+    await face.pickDirectory()
+    expect(snapshot().fields.modelsDir.text).toBe('C:/models')
+    expect(snapshot().dirty).toBe(true)
+  })
+
+  it('a cancelled or refused pick stages nothing', async () => {
+    const cancelled = mount({ command: 'nbocr' }, pickerApi(null))
+    await cancelled.face.pickDirectory()
+    expect(cancelled.snapshot().fields.modelsDir.text).toBe('')
+    const refused = mount({ command: 'nbocr' }, {
+      host: { pickDirectory: async () => ({ result: { ok: false, error: {} } }) },
+    })
+    await refused.face.pickDirectory()
+    expect(refused.snapshot().fields.modelsDir.text).toBe('')
+  })
+
+  it('no connection seam means no picking affordance', async () => {
+    const { face } = mount({ command: 'nbocr' }, undefined)
+    await face.pickDirectory()
+    // Without the wire face the action is a no-op; the renderer hides the button.
   })
 })

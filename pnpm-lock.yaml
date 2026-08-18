@@ -17,6 +17,9 @@ importers:
       '@deepseek-ai/dsh-attachment-local':
         specifier: 0.1.0-rc.7
         version: 0.1.0-rc.7(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-attachment@0.1.0-rc.7(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-brand@0.1.0-rc.7(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-invariants@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-invariants@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-home-paths@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)(@deepseek-ai/dsh-invariants@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1)))(@deepseek-ai/dsh-invariants@0.1.0-rc.6(@deepseek-ai/cordis@4.0.1))(@types/node@24.13.3)
+      '@deepseek-ai/dsh-client-connection':
+        specifier: 0.1.0-rc.7
+        version: 0.1.0-rc.7(f3c01a1e5e0230167f236577ad2d7f41)
       '@deepseek-ai/dsh-client-locale':
         specifier: 0.1.0-rc.7
         version: 0.1.0-rc.7(07345430f1a2b6bdb4e283975cc4f4fb)

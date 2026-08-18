@@ -6,6 +6,8 @@
  */
 
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+// Type-only: the connection handle carrying the wire face for the picker.
+import type { ConnectionHandle } from '@deepseek-ai/dsh-client-connection/client'
 // Type-only: the ctx.locale Context merge.
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 // Type-only: the ctx.settingsScope Context merge.
@@ -34,7 +36,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 const CARD_LOCALE_NS = 'settings.toolOcr'
 
 /** Required services (cordis fiber inject). */
-export const inject = ['slots', 'locale', 'settingsScope']
+export const inject = ['slots', 'locale', 'settingsScope', 'connection']
 
 /**
  * Mount the ocr configuration card.
@@ -42,7 +44,11 @@ export const inject = ['slots', 'locale', 'settingsScope']
  */
 export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.locale.register(CARD_LOCALE_NS, { zh, en }), 'dsh-tool-ocr: card dictionaries')
-  const card = new OcrCardController(ctx.settingsScope.bind<OcrCardSettings>({ namespace: TOOL_OCR_NS }))
+  const { api } = ctx.get('connection') as ConnectionHandle
+  const card = new OcrCardController(
+    ctx.settingsScope.bind<OcrCardSettings>({ namespace: TOOL_OCR_NS }),
+    api,
+  )
   ctx.slots.inject('settings.plugin.item', () => ctx.slots.register({
     name: 'settings.plugin.item',
     key: TOOL_OCR_NS,

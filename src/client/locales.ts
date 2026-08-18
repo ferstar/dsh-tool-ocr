@@ -27,6 +27,7 @@ export type OcrCardKey =
   | 'reset'
   | 'save'
   | 'discard'
+  | 'pickDirectory'
   | 'invalidNumber'
   | 'saveFailed'
 
@@ -51,6 +52,7 @@ export const en: Record<OcrCardKey, string> = {
   reset: 'Reset',
   save: 'Save',
   discard: 'Discard',
+  pickDirectory: 'Pick directory…',
   invalidNumber: 'Enter a whole number',
   saveFailed: 'The host refused the save; correct the highlighted fields and try again.',
 }
@@ -76,6 +78,7 @@ export const zh: Record<OcrCardKey, string> = {
   "reset": "恢复默认",
   "save": "保存",
   "discard": "放弃修改",
+  "pickDirectory": "选择目录…",
   "invalidNumber": "请输入整数",
   "saveFailed": "本部署没有接受这些值，已保留供你修改。"
 }

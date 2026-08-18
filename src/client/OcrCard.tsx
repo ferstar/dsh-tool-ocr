@@ -183,6 +183,9 @@ const hint: CSSProperties = {
 
 const invalid: CSSProperties = { ...hint, color: 'var(--dsw-alias-label-error)' }
 
+/** The native directory chooser row under the models-dir control. */
+const pickRow: CSSProperties = { display: 'flex', justifyContent: 'flex-end' }
+
 const footer: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
@@ -213,6 +216,7 @@ function FieldRow(props: {
   view: { text: string; invalid: boolean; overridden: boolean }
   numeric: boolean
   options: readonly { value: string; label: string }[] | undefined
+  pickLabel: string | undefined
   disabled: boolean
   first: boolean
   overriddenLabel: string
@@ -220,6 +224,7 @@ function FieldRow(props: {
   invalidLabel: string
   onEdit: (text: string) => void
   onReset: () => void
+  onPick: (() => void) | undefined
 }) {
   return (
     <div style={fieldRow(props.first)}>
@@ -275,6 +280,15 @@ function FieldRow(props: {
       <p style={props.view.invalid ? invalid : hint}>
         {props.view.invalid ? props.invalidLabel : props.hint}
       </p>
+      {props.onPick === undefined
+        ? null
+        : (
+          <div style={pickRow}>
+            <Button variant="outline" size="sm" disabled={props.disabled} onClick={props.onPick}>
+              {props.pickLabel}
+            </Button>
+          </div>
+        )}
     </div>
   )
 }
@@ -329,6 +343,8 @@ export function OcrCard(props: OcrCardProps) {
                 invalidLabel={t('invalidNumber')}
                 onEdit={text => { props.edit(field.key, text) }}
                 onReset={() => { props.resetField(field.key) }}
+                pickLabel={field.key === 'modelsDir' ? t('pickDirectory') : undefined}
+                onPick={field.key === 'modelsDir' ? () => { void props.pickDirectory() } : undefined}
               />
             ))}
             <div style={footer}>

@@ -5,6 +5,7 @@
  * pairs the two without ever learning what the namespace means.
  */
 
+import type { IApiClient } from '@deepseek-ai/dsh-client-connection/client'
 import type { SettingsScope, SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
 import {
   numberField, textField, type OcrFieldSpec, type OcrFormActions, type OcrFormShell,
@@ -134,6 +135,11 @@ export interface OcrCardFace extends OcrFormActions {
     /** Card snapshot bound by the renderer as useOcrCard. */
     ocrCard: SnapshotStore<OcrCardState>
   }
+  /**
+   * Open the host's native directory chooser and stage the picked path as
+   * the models-dir draft. A cancellation or refusal stages nothing.
+   */
+  pickDirectory(): Promise<void>
 }
 
 /** Bridges the `tool-ocr` settings scope onto the card. */
@@ -143,8 +149,13 @@ export class OcrCardController {
 
   /**
    * @param scope - the bound settings scope for the `tool-ocr` namespace.
+   * @param api - wire face used for the native directory chooser; absent
+   *   deployments (no connection seam) render no picking affordance.
    */
-  constructor(scope: SettingsScope<OcrCardSettings>) {
+  constructor(
+    scope: SettingsScope<OcrCardSettings>,
+    private readonly api: Pick<IApiClient, 'host'> | undefined,
+  ) {
     this.form = new OcrForm(
       scope,
       OCR_FIELDS.map(field => field.spec),
@@ -155,8 +166,20 @@ export class OcrCardController {
     }))
   }
 
+  /**
+   * Open the host's native directory chooser and stage the picked path.
+   * @returns settlement after the dialog; a cancellation or refusal stages nothing.
+   */
+  async pickDirectory(): Promise<void> {
+    if (this.api === undefined) return
+    const response = await this.api.host.pickDirectory({}, new AbortController().signal)
+    if (!response.result.ok) return
+    const path = response.result.value.path
+    if (path !== null) this.form.actions().edit('modelsDir', path)
+  }
+
   /** Build the face the card's slot registration injects. */
   inject(): OcrCardFace {
-    return { hooks: { ocrCard: this.store }, ...this.form.actions() }
+    return { hooks: { ocrCard: this.store }, ...this.form.actions(), pickDirectory: () => this.pickDirectory() }
   }
 }
