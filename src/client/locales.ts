@@ -18,6 +18,11 @@ export type OcrCardKey =
   | 'timeoutMs'
   | 'maxImageBytes'
   | 'maxOutputBytes'
+  | 'expand'
+  | 'collapse'
+  | 'unsaved'
+  | 'readOnly'
+  | 'saving'
   | 'overridden'
   | 'reset'
   | 'save'
@@ -37,6 +42,11 @@ export const en: Record<OcrCardKey, string> = {
   timeoutMs: 'Recognition timeout (ms)',
   maxImageBytes: 'Max image bytes',
   maxOutputBytes: 'Max engine output bytes',
+  expand: 'Expand',
+  collapse: 'Collapse',
+  unsaved: 'Unsaved changes',
+  readOnly: 'This deployment serves the section read-only.',
+  saving: 'Saving…',
   overridden: 'Overridden',
   reset: 'Reset',
   save: 'Save',
@@ -57,6 +67,11 @@ export const zh: Record<OcrCardKey, string> = {
   "timeoutMs": "识别超时（毫秒）",
   "maxImageBytes": "最大图片字节数",
   "maxOutputBytes": "最大引擎输出字节数",
+  "expand": "展开",
+  "collapse": "收起",
+  "unsaved": "有未保存的更改",
+  "readOnly": "当前部署以只读方式提供该配置。",
+  "saving": "保存中…",
   "overridden": "已覆盖",
   "reset": "重置",
   "save": "保存",

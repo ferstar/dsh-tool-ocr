@@ -34,16 +34,26 @@ export interface OcrCardSettings {
   maxOutputBytes?: number
 }
 
+/** One editable field: its section key, its conversion spec, and its control kind. */
+export interface OcrFieldEntry {
+  /** Field name inside the namespace section. */
+  key: keyof OcrCardSettings
+  /** Conversion between the stored value and the draft text. */
+  spec: OcrFieldSpec
+  /** Whether the control hints a numeric keypad. */
+  numeric: boolean
+}
+
 /** The fields this card edits, in render order. */
-export const OCR_FIELDS: readonly { key: keyof OcrCardSettings; spec: OcrFieldSpec }[] = [
-  { key: 'command', spec: textField('command') },
-  { key: 'language', spec: textField('language') },
-  { key: 'detModel', spec: textField('detModel') },
-  { key: 'modelsDir', spec: textField('modelsDir') },
-  { key: 'maxTextChars', spec: numberField('maxTextChars') },
-  { key: 'timeoutMs', spec: numberField('timeoutMs') },
-  { key: 'maxImageBytes', spec: numberField('maxImageBytes') },
-  { key: 'maxOutputBytes', spec: numberField('maxOutputBytes') },
+export const OCR_FIELDS: readonly OcrFieldEntry[] = [
+  { key: 'command', spec: textField('command'), numeric: false },
+  { key: 'language', spec: textField('language'), numeric: false },
+  { key: 'detModel', spec: textField('detModel'), numeric: false },
+  { key: 'modelsDir', spec: textField('modelsDir'), numeric: false },
+  { key: 'maxTextChars', spec: numberField('maxTextChars'), numeric: true },
+  { key: 'timeoutMs', spec: numberField('timeoutMs'), numeric: true },
+  { key: 'maxImageBytes', spec: numberField('maxImageBytes'), numeric: true },
+  { key: 'maxOutputBytes', spec: numberField('maxOutputBytes'), numeric: true },
 ]
 
 /** The card's snapshot: the form shell plus one row per field. */
