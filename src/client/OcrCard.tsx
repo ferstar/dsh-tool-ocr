@@ -332,7 +332,9 @@ export function OcrCard(props: OcrCardProps) {
                 key={field.key}
                 id={'ocr-field-' + field.key}
                 label={t(field.key)}
-                hint={field.key === 'command' ? t('commandHint') : undefined}
+                hint={field.key === 'command'
+                  ? t('commandHint')
+                  : field.key === 'modelsDir' ? t('modelsDirHint') : undefined}
                 view={state.fields[field.key]!}
                 numeric={field.numeric}
                 options={field.options}

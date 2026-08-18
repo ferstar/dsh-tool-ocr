@@ -14,6 +14,7 @@ export type OcrCardKey =
   | 'language'
   | 'detModel'
   | 'modelsDir'
+  | 'modelsDirHint'
   | 'maxTextChars'
   | 'timeoutMs'
   | 'maxImageBytes'
@@ -39,6 +40,7 @@ export const en: Record<OcrCardKey, string> = {
   language: 'Recognition language',
   detModel: 'Detection model tier',
   modelsDir: 'Models directory',
+  modelsDirHint: 'Usually not needed — leave empty to use the embedded models. Set it only when you use custom non-embedded models.',
   maxTextChars: 'Max recognized text characters',
   timeoutMs: 'Recognition timeout (ms)',
   maxImageBytes: 'Max image bytes',
@@ -65,6 +67,7 @@ export const zh: Record<OcrCardKey, string> = {
   "language": "识别语言",
   "detModel": "检测模型档位",
   "modelsDir": "模型目录",
+  "modelsDirHint": "一般无需配置，留空使用内嵌模型；仅在需要自定义模型时填写模型目录。",
   "maxTextChars": "最大识别文本字符数",
   "timeoutMs": "识别超时（毫秒）",
   "maxImageBytes": "最大图片字节数",

@@ -43,7 +43,7 @@ describe('client bundle artifact', () => {
   it('hands the plugin id to the module loader and executes its factory', () => {
     expect(loaded?.id).toBe('dsh-tool-ocr')
     expect(loaded?.exports.apply).toBeTypeOf('function')
-    expect(loaded?.exports.inject).toEqual(['slots', 'locale', 'settingsScope'])
+    expect(loaded?.exports.inject).toEqual(['slots', 'locale', 'settingsScope', 'connection'])
     expect(loaded?.exports.TOOL_OCR_NS).toBe('tool-ocr')
   })
 })
