@@ -17,7 +17,7 @@ import { OcrCardController, TOOL_OCR_NS, type OcrCardSettings } from './ocr-card
 import { en, zh, type OcrCardKey } from './locales.ts'
 
 export { OcrCard } from './OcrCard.tsx'
-export { OcrCardController, OCR_FIELDS, TOOL_OCR_NS } from './ocr-card-controller.ts'
+export { DET_MODEL_OPTIONS, LANGUAGE_OPTIONS, OcrCardController, OCR_FIELDS, TOOL_OCR_NS } from './ocr-card-controller.ts'
 export type { OcrCardFace, OcrCardSettings, OcrCardState } from './ocr-card-controller.ts'
 export { OcrForm, numberField, textField } from './ocr-form.ts'
 export type { OcrFieldSpec, OcrFieldState, OcrFormActions, OcrFormShell } from './ocr-form.ts'

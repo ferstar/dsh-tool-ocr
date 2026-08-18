@@ -67,15 +67,15 @@ export const zh: Record<OcrCardKey, string> = {
   "timeoutMs": "识别超时（毫秒）",
   "maxImageBytes": "最大图片字节数",
   "maxOutputBytes": "最大引擎输出字节数",
-  "expand": "展开",
-  "collapse": "收起",
-  "unsaved": "有未保存的更改",
+  "expand": "展开设置",
+  "collapse": "收起设置",
+  "unsaved": "未保存",
   "readOnly": "当前部署以只读方式提供该配置。",
   "saving": "保存中…",
   "overridden": "已覆盖",
-  "reset": "重置",
+  "reset": "恢复默认",
   "save": "保存",
-  "discard": "放弃",
+  "discard": "放弃修改",
   "invalidNumber": "请输入整数",
-  "saveFailed": "宿主拒绝了本次保存；请修正标红的字段后重试。"
+  "saveFailed": "本部署没有接受这些值，已保留供你修改。"
 }

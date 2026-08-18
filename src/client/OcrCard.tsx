@@ -168,6 +168,12 @@ const input: CSSProperties = {
 
 const inputInvalid: CSSProperties = { ...input, borderColor: 'var(--dsw-alias-label-error)' }
 
+/** The dropdown shares the input's frame; the native arrow carries the affordance. */
+const select: CSSProperties = {
+  ...input,
+  cursor: 'pointer',
+}
+
 const hint: CSSProperties = {
   margin: 0,
   fontSize: 12,
@@ -206,6 +212,7 @@ function FieldRow(props: {
   hint: string | undefined
   view: { text: string; invalid: boolean; overridden: boolean }
   numeric: boolean
+  options: readonly { value: string; label: string }[] | undefined
   disabled: boolean
   first: boolean
   overriddenLabel: string
@@ -234,16 +241,37 @@ function FieldRow(props: {
           )
           : null}
       </div>
-      <input
-        id={props.id}
-        style={props.view.invalid ? inputInvalid : input}
-        type="text"
-        {...props.numeric ? { inputMode: 'numeric' as const } : {}}
-        {...props.view.invalid ? { 'aria-invalid': true } : {}}
-        value={props.view.text}
-        disabled={props.disabled}
-        onChange={event => { props.onEdit(event.target.value) }}
-      />
+      {props.options === undefined
+        ? (
+          <input
+            id={props.id}
+            style={props.view.invalid ? inputInvalid : input}
+            type="text"
+            {...props.numeric ? { inputMode: 'numeric' as const } : {}}
+            {...props.view.invalid ? { 'aria-invalid': true } : {}}
+            value={props.view.text}
+            disabled={props.disabled}
+            onChange={event => { props.onEdit(event.target.value) }}
+          />
+        )
+        : (
+          // A value outside the vocabulary (a cordis.yml-only spelling) still
+          // renders as a choice, so the form never blanks what the deployment set.
+          <select
+            id={props.id}
+            style={select}
+            value={props.view.text}
+            disabled={props.disabled}
+            onChange={event => { props.onEdit(event.target.value) }}
+          >
+            {[...props.options,
+              ...(props.view.text !== '' && !props.options.some(option => option.value === props.view.text)
+                ? [{ value: props.view.text, label: props.view.text }]
+                : [])].map(option => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        )}
       <p style={props.view.invalid ? invalid : hint}>
         {props.view.invalid ? props.invalidLabel : props.hint}
       </p>
@@ -293,6 +321,7 @@ export function OcrCard(props: OcrCardProps) {
                 hint={field.key === 'command' ? t('commandHint') : undefined}
                 view={state.fields[field.key]!}
                 numeric={field.numeric}
+                options={field.options}
                 disabled={!state.writable}
                 first={index === 0}
                 overriddenLabel={t('overridden')}

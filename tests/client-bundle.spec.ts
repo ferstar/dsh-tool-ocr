@@ -9,9 +9,11 @@ import { describe, expect, it, beforeAll } from 'vitest'
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 
-/** The loader table's answer for the one external the bundle requires. */
+/** The loader table's answer for the externals the bundle requires. */
 const platformModules: Record<string, unknown> = {
+  react: { useState: () => [undefined, () => undefined] },
   'react/jsx-runtime': { jsx: () => null, jsxs: () => null, Fragment: Symbol('Fragment') },
+  '@deepseek-ai/dsh-client-ui-primitives': {},
 }
 
 interface LoadedEntry {

@@ -42,13 +42,79 @@ export interface OcrFieldEntry {
   spec: OcrFieldSpec
   /** Whether the control hints a numeric keypad. */
   numeric: boolean
+  /** Dropdown choices for fields the engine vocabulary constrains; absent keeps a text input. */
+  options?: readonly { value: string; label: string }[]
 }
+
+/** Recognition languages the newbee-ocr CLI accepts (canonical aliases). */
+export const LANGUAGE_OPTIONS: readonly { value: string; label: string }[] = [
+  { value: 'chinese', label: 'chinese（简体中文）' },
+  { value: 'chinese_cht', label: 'chinese_cht（繁體中文）' },
+  { value: 'english', label: 'english' },
+  { value: 'japanese', label: 'japanese' },
+  { value: 'afrikaans', label: 'afrikaans' },
+  { value: 'azerbaijani', label: 'azerbaijani' },
+  { value: 'bosnian', label: 'bosnian' },
+  { value: 'catalan', label: 'catalan' },
+  { value: 'czech', label: 'czech' },
+  { value: 'welsh', label: 'welsh' },
+  { value: 'danish', label: 'danish' },
+  { value: 'german', label: 'german' },
+  { value: 'spanish', label: 'spanish' },
+  { value: 'estonian', label: 'estonian' },
+  { value: 'basque', label: 'basque' },
+  { value: 'finnish', label: 'finnish' },
+  { value: 'french', label: 'french' },
+  { value: 'irish', label: 'irish' },
+  { value: 'galician', label: 'galician' },
+  { value: 'croatian', label: 'croatian' },
+  { value: 'hungarian', label: 'hungarian' },
+  { value: 'indonesian', label: 'indonesian' },
+  { value: 'icelandic', label: 'icelandic' },
+  { value: 'italian', label: 'italian' },
+  { value: 'kurdish', label: 'kurdish' },
+  { value: 'latin', label: 'latin' },
+  { value: 'luxembourgish', label: 'luxembourgish' },
+  { value: 'lithuanian', label: 'lithuanian' },
+  { value: 'latvian', label: 'latvian' },
+  { value: 'maori', label: 'maori' },
+  { value: 'malay', label: 'malay' },
+  { value: 'maltese', label: 'maltese' },
+  { value: 'dutch', label: 'dutch' },
+  { value: 'norwegian', label: 'norwegian' },
+  { value: 'occitan', label: 'occitan' },
+  { value: 'polish', label: 'polish' },
+  { value: 'portuguese', label: 'portuguese' },
+  { value: 'quechua', label: 'quechua' },
+  { value: 'romansh', label: 'romansh' },
+  { value: 'romanian', label: 'romanian' },
+  { value: 'serbian_latin', label: 'serbian_latin' },
+  { value: 'slovak', label: 'slovak' },
+  { value: 'slovenian', label: 'slovenian' },
+  { value: 'albanian', label: 'albanian' },
+  { value: 'swedish', label: 'swedish' },
+  { value: 'swahili', label: 'swahili' },
+  { value: 'tagalog', label: 'tagalog' },
+  { value: 'turkish', label: 'turkish' },
+  { value: 'uzbek', label: 'uzbek' },
+  { value: 'vietnamese', label: 'vietnamese' },
+]
+
+/** Detection model tiers the newbee-ocr CLI accepts. */
+export const DET_MODEL_OPTIONS: readonly { value: string; label: string }[] = [
+  { value: 'v6-tiny', label: 'v6-tiny' },
+  { value: 'v6-small', label: 'v6-small' },
+  { value: 'v6-medium', label: 'v6-medium' },
+  { value: 'v5', label: 'v5' },
+  { value: 'v5-fp16', label: 'v5-fp16' },
+  { value: 'v4', label: 'v4' },
+]
 
 /** The fields this card edits, in render order. */
 export const OCR_FIELDS: readonly OcrFieldEntry[] = [
   { key: 'command', spec: textField('command'), numeric: false },
-  { key: 'language', spec: textField('language'), numeric: false },
-  { key: 'detModel', spec: textField('detModel'), numeric: false },
+  { key: 'language', spec: textField('language'), numeric: false, options: LANGUAGE_OPTIONS },
+  { key: 'detModel', spec: textField('detModel'), numeric: false, options: DET_MODEL_OPTIONS },
   { key: 'modelsDir', spec: textField('modelsDir'), numeric: false },
   { key: 'maxTextChars', spec: numberField('maxTextChars'), numeric: true },
   { key: 'timeoutMs', spec: numberField('timeoutMs'), numeric: true },
