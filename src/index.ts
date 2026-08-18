@@ -15,6 +15,7 @@ import { tmpdir } from 'node:os'
 import { join, isAbsolute } from 'node:path'
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
+import { installSettingsSection, settingsNamespace } from '@deepseek-ai/dsh-settings'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import type { ToolExecution } from '@deepseek-ai/dsh-tools'
 import type {} from '@deepseek-ai/dsh-system-prompt'
@@ -40,6 +41,13 @@ export { DEFAULT_MAX_TEXT_CHARS, DEFAULT_OCR_TIMEOUT_MS, formatRecognitionText, 
 
 /** Cordis plugin name for loader diagnostics. */
 export const name = 'tool-ocr'
+
+/**
+ * The plugin's settings namespace: the join key between the Host settings
+ * section and the browser configuration card. Lowercase kebab-case, matching
+ * the plugin short name.
+ */
+export const TOOL_OCR_SETTINGS_NAMESPACE = settingsNamespace('tool-ocr')
 
 /** Services required by this plugin. */
 export const inject = ['tools', 'subprocess', 'systemPrompt']
@@ -113,28 +121,54 @@ export interface OcrService {
  * @param ctx - the plugin context (injects `tools`, `subprocess`, `systemPrompt`).
  * @param config - resolved plugin configuration.
  */
-export function apply(ctx: Context, config: Config): void {
-  const resolved = resolveEngineConfig(config)
-  if (resolved.command.trim() === '') throw new Error('dsh-ocr: command must be a non-empty string')
-  const maxTextChars = config.maxTextChars ?? DEFAULT_MAX_TEXT_CHARS
-  const timeoutMs = config.timeoutMs ?? DEFAULT_OCR_TIMEOUT_MS
+/**
+ * Reject a resolved configuration the plugin could not act on — the checks
+ * schemastery cannot express. Shared by the composition mount and the
+ * settings write path, so a value refused by one is refused by both.
+ * @param value - the configuration to judge.
+ */
+function validateOcrConfig(value: Config): void {
+  if (value.command.trim() === '') throw new Error('dsh-ocr: command must be a non-empty string')
+  const maxTextChars = value.maxTextChars ?? DEFAULT_MAX_TEXT_CHARS
+  const timeoutMs = value.timeoutMs ?? DEFAULT_OCR_TIMEOUT_MS
   if (!Number.isInteger(maxTextChars) || maxTextChars < 1) {
     throw new Error('dsh-ocr: maxTextChars must be a positive integer')
   }
   if (!Number.isInteger(timeoutMs) || timeoutMs < 1) {
     throw new Error('dsh-ocr: timeoutMs must be a positive integer')
   }
+}
+
+export function apply(ctx: Context, config: Config): void {
+  validateOcrConfig(config)
 
   const spawner: Spawner = {
     spawn: spec => ctx.subprocess.spawn(spec as never),
   }
-  const engine = new NbocrEngine(resolved, spawner)
+  // The engine is rebuilt from the active configuration source: the settings
+  // scope while a provider is mounted, the composition entry otherwise.
+  let current: () => Config = () => config
+  const activeMaxTextChars = (): number => current().maxTextChars ?? DEFAULT_MAX_TEXT_CHARS
+  let engine = new NbocrEngine(resolveEngineConfig(config), spawner)
   const service: OcrService = {
     recognize: (request, signal) => engine.recognize(request, signal),
     status: () => Promise.resolve(engine.status()),
     check: signal => engine.check(signal),
   }
   ctx.provide('ocr', service)
+
+  // Browser-configurable settings: while a settings provider is mounted, the
+  // `tool-ocr` namespace layers the composition entry as its base and every
+  // committed change rebuilds the engine from the resolved section.
+  installSettingsSection(ctx, TOOL_OCR_SETTINGS_NAMESPACE, Config, config, {
+    validate: validateOcrConfig,
+    setSource: (source) => {
+      current = source
+    },
+    onChange: () => {
+      engine = new NbocrEngine(resolveEngineConfig(current()), spawner)
+    },
+  })
 
   ctx.systemPrompt.section({ name: 'tool:ocr', order: 113, text: OCR_PROMPT_TEXT })
 
@@ -196,7 +230,7 @@ export function apply(ctx: Context, config: Config): void {
         path: imagePath,
         includeBoxes: args.include_boxes === true,
         table: args.table === true,
-        maxTextChars: args.max_text_chars !== undefined ? validatedMaxTextChars(args.max_text_chars) : maxTextChars,
+        maxTextChars: args.max_text_chars !== undefined ? validatedMaxTextChars(args.max_text_chars) : activeMaxTextChars(),
       }, exec.signal)
       return { kind: 'recognize' as const, result } as unknown as never
     },

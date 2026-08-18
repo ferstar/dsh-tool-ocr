@@ -14,6 +14,7 @@ Fully out-of-tree: depends only on published dsh base packages (`@deepseek-ai/co
 | Image inputs | Local `path` (resolved against the session workspace) or `attachment_id` (image already attached to the conversation, materialized to a temp file) |
 | Output | Reading-ordered `<text>`, engine facts, per-block bounding boxes (`include_boxes`), review flags (low-confidence / amount / numeric / date / quantity, `needsReview`), heuristic Markdown table (`table`) |
 | Robustness | Survives MNN diagnostics polluting engine stdout; honors caller cancellation and timeout |
+| Configuration page | When run on dsh ≥ 0.1.0-rc.7, the plugin registers the `tool-ocr` settings namespace: the web **Settings → Plugins** page renders a card to edit the engine command, model tier, and run bounds live — no composition edit needed |
 
 ## Two ways to use it
 
